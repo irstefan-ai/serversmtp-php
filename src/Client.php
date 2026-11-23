@@ -6,7 +6,7 @@ namespace ServerSMTP;
 
 final class Client
 {
-    public const VERSION = '0.1.0';
+    public const VERSION = '0.2.0';
     private const DEFAULT_BASE_URL = 'https://api.serversmtp.ro';
 
     public readonly Emails $emails;

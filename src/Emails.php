@@ -15,7 +15,8 @@ final class Emails
     /**
      * Sends one email. Reuse $idempotencyKey when retrying so the email is never sent twice.
      *
-     * @param array<string, mixed> $message from, to, subject, html, text, replyTo, or templateId + variables
+     * @param array<string, mixed> $message from, to, cc, bcc, subject, html, text, replyTo, attachments
+     *        (see Attachment::fromPath()), or templateId + variables
      */
     public function send(array $message, ?string $idempotencyKey = null): Response
     {

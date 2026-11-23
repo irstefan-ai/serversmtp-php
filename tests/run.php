@@ -90,6 +90,26 @@ check($client->verifyApiKey()->data === ['ok' => true], 'verify api key');
 $offline = expectError(fn () => (new Client($key, ['baseUrl' => 'http://127.0.0.1:9', 'timeout' => 3]))->emails->send($message));
 check($offline?->type === 'network_error', 'network error type');
 
+$tmp = tempnam(sys_get_temp_dir(), 'ssmtp');
+file_put_contents($tmp, '%PDF-1.4 fixture');
+$fromPath = ServerSMTP\Attachment::fromPath($tmp, 'factura-1001.pdf');
+unlink($tmp);
+check($fromPath === ['filename' => 'factura-1001.pdf', 'content' => base64_encode('%PDF-1.4 fixture')], 'attachment from path');
+$client->emails->send(array_merge($message, [
+    'cc' => 'contabil@example.invalid',
+    'bcc' => ['arhiva@example.invalid'],
+    'attachments' => [$fromPath, ServerSMTP\Attachment::fromString('Bună ziua', 'nota.txt', 'text/plain')],
+]));
+$body = last($baseUrl)['body'];
+check($body['cc'] === 'contabil@example.invalid' && $body['bcc'] === ['arhiva@example.invalid'], 'cc and bcc sent');
+check(base64_decode($body['attachments'][1]['content']) === 'Bună ziua' && $body['attachments'][1]['contentType'] === 'text/plain', 'attachment from string');
+try {
+    ServerSMTP\Attachment::fromPath('/nonexistent/file.pdf');
+    check(false, 'missing attachment file rejected');
+} catch (InvalidArgumentException) {
+    check(true, 'missing attachment file rejected');
+}
+
 putenv('SERVERSMTP_API_KEY');
 try {
     new Client();

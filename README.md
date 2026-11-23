@@ -20,6 +20,20 @@ echo $response->data['status'];   // "sent" or "unknown"
 echo $response->idempotencyKey;   // reuse it to retry safely
 ```
 
+Attachments, CC and BCC (up to 10 files, 10 MB in total; each address counts toward the quota):
+
+```php
+$serversmtp->emails->send([
+    'from' => 'Shop <orders@your-domain.ro>',
+    'to' => 'customer@example.com',
+    'cc' => 'accounting@your-domain.ro',
+    'bcc' => ['archive@your-domain.ro'],
+    'subject' => 'Invoice #1001',
+    'text' => 'Your invoice is attached.',
+    'attachments' => [ServerSMTP\Attachment::fromPath(__DIR__ . '/invoice-1001.pdf')],
+]);
+```
+
 - `$client->emails->send()`, `sendBatch()`, `schedule()` (accepts `DateTimeInterface` for `sendAt`)
 - `$client->scheduled->list()`, `get()`, `cancel()`, `$client->verifyApiKey()`
 - Errors throw `ServerSMTP\ServerSMTPException` with `statusCode`, `fields`, `requestId` and `type` (`api_error` or `network_error`).
