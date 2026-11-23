@@ -25,8 +25,8 @@
     },
     "support": {
         "docs": "https://serversmtp.ro/docs#biblioteci",
-        "issues": "https://github.com/irstefan-ai/serversmtp-php/issues",
-        "source": "https://github.com/irstefan-ai/serversmtp-php"
+        "issues": "https://github.com/serversmtp-ro/serversmtp-php/issues",
+        "source": "https://github.com/serversmtp-ro/serversmtp-php"
     },
     "authors": [
         {
