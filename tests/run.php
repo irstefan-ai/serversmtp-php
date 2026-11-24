@@ -1,6 +1,6 @@
 <?php
 
-// Contract tests: php tests/run.php <baseUrl>, with tests/contract-server.mjs running.
+// Contract tests: php tests/run.php <baseUrl>, with sdks/contract-server.mjs running.
 declare(strict_types=1);
 
 spl_autoload_register(static function (string $class): void {
@@ -109,6 +109,15 @@ try {
 } catch (InvalidArgumentException) {
     check(true, 'missing attachment file rejected');
 }
+
+$started = $client->events->trigger('comanda.expediata', 'ana@example.invalid', ['order_reference' => 'INV-1001', 'order_total' => '169.90'], '0722 123 456', '00000000-0000-4000-8000-000000000001');
+$request = last($baseUrl);
+check($started->data === ['started' => 1], 'event starts automations');
+check($request['path'] === '/v1/events' && $request['headers']['idempotency-key'] === null, 'event request without idempotency key');
+check($request['body'] === ['event' => 'comanda.expediata', 'email' => 'ana@example.invalid', 'audience_id' => '00000000-0000-4000-8000-000000000001', 'phone' => '0722 123 456', 'data' => ['order_reference' => 'INV-1001', 'order_total' => '169.90']], 'event body');
+$client->events->trigger('comanda.platita', 'ana@example.invalid', [], '  ');
+check(last($baseUrl)['body'] === ['event' => 'comanda.platita', 'email' => 'ana@example.invalid'], 'empty phone and data are left out');
+check(expectError(fn () => $client->events->trigger('comanda.expediata', 'ana@example.invalid', [], '123'))?->fields === ['phone'], 'invalid phone reported in fields');
 
 putenv('SERVERSMTP_API_KEY');
 try {

@@ -6,11 +6,12 @@ namespace ServerSMTP;
 
 final class Client
 {
-    public const VERSION = '0.2.0';
+    public const VERSION = '0.3.0';
     private const DEFAULT_BASE_URL = 'https://api.serversmtp.ro';
 
     public readonly Emails $emails;
     public readonly Scheduled $scheduled;
+    public readonly Events $events;
     private string $apiKey;
     private string $baseUrl;
     private int $timeout;
@@ -30,6 +31,7 @@ final class Client
         $this->timeout = $options['timeout'] ?? 30;
         $this->emails = new Emails($this);
         $this->scheduled = new Scheduled($this);
+        $this->events = new Events($this);
     }
 
     /** Checks that the API key is active. */
@@ -39,7 +41,7 @@ final class Client
     }
 
     /**
-     * @internal used by Emails and Scheduled
+     * @internal used by Emails, Scheduled and Events
      * @param array<string, mixed>|null $body
      */
     public function request(string $method, string $path, ?array $body = null, ?string $idempotencyKey = null): Response

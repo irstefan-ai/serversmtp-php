@@ -22,6 +22,10 @@ function route(method, path, query, body, headers) {
     return [400, { message: "Date invalide.", fields: [] }];
   }
   if (method === "POST" && path === "/v1/auth/check") return [200, { ok: true }];
+  if (method === "POST" && path === "/v1/events") {
+    if (body?.phone === "123") return [400, { message: "Date invalide.", fields: ["phone"] }];
+    return [200, { started: body?.event === "comanda.expediata" ? 1 : 0 }];
+  }
   if (method === "POST" && path === "/v1/send") {
     if (body?.subject === "invalid") return [400, { message: "Date invalide.", fields: ["subject"] }];
     if (body?.to === "unknown@example.invalid") {

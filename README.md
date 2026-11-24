@@ -36,9 +36,10 @@ $serversmtp->emails->send([
 
 - `$client->emails->send()`, `sendBatch()`, `schedule()` (accepts `DateTimeInterface` for `sendAt`)
 - `$client->scheduled->list()`, `get()`, `cancel()`, `$client->verifyApiKey()`
+- `$client->events->trigger($event, $email, $data, $phone, $audienceId)` starts the automations for an event (email and SMS steps)
 - Errors throw `ServerSMTP\ServerSMTPException` with `statusCode`, `fields`, `requestId` and `type` (`api_error` or `network_error`).
 
-Laravel: add `'serversmtp' => ['key' => env('SERVERSMTP_API_KEY')]` to `config/services.php` and create the client with `config('services.serversmtp.key')`. For Laravel Mail, you can also use SMTP (smtp.serversmtp.ro, port 587).
+Laravel: add `'serversmtp' => ['key' => env('SERVERSMTP_API_KEY')]` to `config/services.php` and create the client with `config('services.serversmtp.key')`. For Laravel Mail, install [`serversmtp/serversmtp-laravel`](https://serversmtp.ro/docs#laravel) (`MAIL_MAILER=serversmtp`) or use SMTP (smtp.serversmtp.ro, port 587).
 
 Docs: https://serversmtp.ro/docs#biblioteci
 
