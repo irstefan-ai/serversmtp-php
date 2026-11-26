@@ -48,6 +48,19 @@ final class Emails
         return $this->client->request('POST', '/v1/send/scheduled', $message, self::key($idempotencyKey));
     }
 
+    /** A sent email with every recipient's status, by requestId or the SES message id returned by send(). */
+    public function get(string $id): Response
+    {
+        return $this->client->request('GET', '/v1/emails/' . rawurlencode($id));
+    }
+
+    /** Sent emails, newest first: ['data' => [...], 'hasMore' => bool]. */
+    public function list(?int $limit = null, ?int $offset = null): Response
+    {
+        $query = http_build_query(array_filter(['limit' => $limit, 'offset' => $offset], static fn ($value) => $value !== null));
+        return $this->client->request('GET', '/v1/emails' . ($query === '' ? '' : '?' . $query));
+    }
+
     private static function key(?string $key): string
     {
         $key ??= 'sdk-' . bin2hex(random_bytes(16));

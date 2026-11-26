@@ -86,6 +86,11 @@ check($client->scheduled->get('job-1')->data['id'] === 'job-1', 'get scheduled')
 check($client->scheduled->cancel('job-1')->data['status'] === 'cancelled' && last($baseUrl)['method'] === 'DELETE', 'cancel scheduled');
 check(expectError(fn () => $client->scheduled->get('missing'))?->statusCode === 404, 'missing scheduled is 404');
 check($client->verifyApiKey()->data === ['ok' => true], 'verify api key');
+$client->emails->send(array_merge($message, ['headers' => ['X-Entity-Ref-ID' => 'order-1001'], 'tags' => [['name' => 'category', 'value' => 'order']]]));
+check(last($baseUrl)['body']['headers'] === ['X-Entity-Ref-ID' => 'order-1001'] && last($baseUrl)['body']['tags'][0]['name'] === 'category', 'headers and tags pass through');
+check($client->emails->get('req-1')->data['recipients'][0]['status'] === 'delivered', 'get sent email');
+check(count($client->emails->list(5)->data['data']) === 1 && last($baseUrl)['query'] === ['limit' => '5'], 'list sent emails');
+check(expectError(fn () => $client->emails->get('missing'))?->statusCode === 404, 'missing email is 404');
 
 $offline = expectError(fn () => (new Client($key, ['baseUrl' => 'http://127.0.0.1:9', 'timeout' => 3]))->emails->send($message));
 check($offline?->type === 'network_error', 'network error type');

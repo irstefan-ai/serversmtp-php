@@ -46,6 +46,15 @@ function route(method, path, query, body, headers) {
   if (method === "GET" && path === "/v1/send/scheduled") {
     return [200, { items: [job("job-1")], hasMore: false, limit: Number(query.get("limit") ?? 50), offset: Number(query.get("offset") ?? 0) }];
   }
+  const sent = (id) => ({
+    id, messageId: "ses-" + id, from: "comenzi@exemplu.ro", subject: "Comanda", createdAt: "2026-11-26T10:00:00.000Z",
+    tags: [{ name: "category", value: "order" }], suppressed: [],
+    recipients: [{ email: "client@exemplu.ro", status: "delivered", acceptedAt: "2026-11-26T10:00:01.000Z", bounceType: null,
+      bounceReason: null, bouncedAt: null, complainedAt: null, openedAt: null, clickedAt: null }],
+  });
+  if (method === "GET" && path === "/v1/emails") return [200, { data: [sent("req-1")], hasMore: false }];
+  const email = path.match(/^\/v1\/emails\/([^/]+)$/);
+  if (email && method === "GET") return email[1] === "missing" ? [404, { message: "Emailul nu există." }] : [200, sent(decodeURIComponent(email[1]))];
   const match = path.match(/^\/v1\/send\/scheduled\/([^/]+)$/);
   if (match && method === "GET") return match[1] === "missing" ? [404, { message: "Mesaj programat inexistent." }] : [200, job(match[1])];
   if (match && method === "DELETE") return [200, job(match[1], "cancelled")];

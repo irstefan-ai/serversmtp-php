@@ -36,6 +36,8 @@ $serversmtp->emails->send([
 
 - `$client->emails->send()`, `sendBatch()`, `schedule()` (accepts `DateTimeInterface` for `sendAt`)
 - `$client->scheduled->list()`, `get()`, `cancel()`, `$client->verifyApiKey()`
+- `$client->emails->get($requestId)`, `$client->emails->list($limit, $offset)`: sent emails with each recipient's status, tags and suppressed addresses
+- Messages accept `headers` (up to 20 custom headers) and `tags` (up to 10 `['name' => ..., 'value' => ...]`)
 - `$client->events->trigger($event, $email, $data, $phone, $audienceId)` starts the automations for an event (email and SMS steps)
 - Errors throw `ServerSMTP\ServerSMTPException` with `statusCode`, `fields`, `requestId` and `type` (`api_error` or `network_error`).
 
